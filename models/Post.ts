@@ -1,14 +1,13 @@
 import mongoose, { Model } from "mongoose";
 import { IUserDocument } from "./User";
-import { Comment, ICommentDocument } from "./Comment";
+import { Comment, CommentType } from "./Comment";
 
 export type PostType = {
-    postId: string;
     content: string;
     postImage?: string;
     user: IUserDocument;
-    likes?: [IUserDocument];
-    comments?: [ICommentDocument];
+    likes?: string[];
+    comments?: CommentType[];
 }
 
 export interface IPostDocument extends PostType, Document{
@@ -17,10 +16,6 @@ export interface IPostDocument extends PostType, Document{
 }
 
 const PostSchema = new mongoose.Schema<IPostDocument>({
-    postId: {
-        type: String,
-        required: true,
-    },
     content: {
         type: String,
         default: ""

@@ -4,14 +4,15 @@ import {
     AvatarImage,
   } from "@/components/ui/avatar"
 
-export default function ProfilePhoto({imageUrl, height=50, width=50}: {
+export default function ProfilePhoto({imageUrl, height, width}: {
     imageUrl: string,
     height: number,
     width: number
 }){
+
     return <div className="cursor-pointer">
         <Avatar>
-            <AvatarImage src={imageUrl} alt="@shadcn" width={width} height={height}/>
+            <AvatarImage src={imageUrl} alt="@shadcn"/>
             <AvatarFallback>CN</AvatarFallback>
         </Avatar>
     </div>

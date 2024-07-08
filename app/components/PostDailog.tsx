@@ -15,6 +15,7 @@ import { useState } from "react"
 import ProfilePhoto from "./ProfilePhoto"
 import { readFileAsDataUrl } from "@/lib/utils"
 import Image from "next/image"
+import { createPostAction } from "@/lib/serverActions"
 
 
 export function PostDialog({children, imageUrl, isOpen, setIsOpen, username}: {
@@ -25,15 +26,14 @@ export function PostDialog({children, imageUrl, isOpen, setIsOpen, username}: {
     username: string
 }) {
 
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<string>("");
 
 
-  const handelPost = ()=>{
-    console.log(content);
-    
-
+  const handelPost = async()=>{
+    await createPostAction(content, selectedFile);
     setContent("");
+    setSelectedFile("");
     setIsOpen(false);
   }
 
