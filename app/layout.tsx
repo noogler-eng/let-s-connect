@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import NavBar from "./components/NavBar";
 import {ClerkProvider} from "@clerk/nextjs"
 import "./globals.css";
-import RightComp from "./components/RightComp";
 
 export const metadata: Metadata = {
   title: "Create Next App",

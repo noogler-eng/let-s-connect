@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import ProfilePhoto from "./ProfilePhoto"
+import { readFileAsDataUrl } from "@/lib/utils"
+import Image from "next/image"
 
 
 export function PostDialog({children, imageUrl, isOpen, setIsOpen, username}: {
@@ -24,17 +26,24 @@ export function PostDialog({children, imageUrl, isOpen, setIsOpen, username}: {
 }) {
 
   const [content, setContent] = useState("");
-  const [img, setImg] = useState("");
+  const [selectedFile, setSelectedFile] = useState<string>("");
 
 
   const handelPost = ()=>{
     console.log(content);
-    console.log(img);
     
 
     setContent("");
-    setImg("");
     setIsOpen(false);
+  }
+
+  const handelFile =async(e: React.ChangeEvent<HTMLInputElement>)=>{
+    const imageFile = e.target.files?.[0];
+    
+    if(imageFile){
+      const data_url = await readFileAsDataUrl(imageFile);
+      setSelectedFile(data_url);
+    }
   }
 
   return (
@@ -65,10 +74,11 @@ export function PostDialog({children, imageUrl, isOpen, setIsOpen, username}: {
             }}/>
           </div>
           <div>
-            <Input id="picture" type="file" value={img} onChange={(e)=>{
-              setImg(e.target.value)
+            <Input id="picture" type="file" onChange={(e)=>{
+              handelFile(e)
             }}/>
           </div>
+          {selectedFile && <Image src={selectedFile} alt="preview-image" width={400} height={400} className="rounded-xl"/>}
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handelPost}>Make It Public</Button>
