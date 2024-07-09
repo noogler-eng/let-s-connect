@@ -3,6 +3,7 @@ import { Post } from "@/models/Post";
 import { currentUser } from "@clerk/nextjs/server";
 import { v2 as cloudinary } from 'cloudinary';
 import DBConnect from "./dbConnect";
+import { revalidatePath } from "next/cache";
 
 
 export const createPostAction = async(content: string, imageUrl: string)=>{
@@ -18,10 +19,13 @@ export const createPostAction = async(content: string, imageUrl: string)=>{
             api_secret: process.env.CLOUD_API_SECRET
         });
 
-        const uploadResult = await cloudinary.uploader.upload(imageUrl)
-        .catch((error) => {
-            console.log(error);
-        });
+        let uploadResult;
+        if(imageUrl){
+            uploadResult = await cloudinary.uploader.upload(imageUrl)
+            .catch((error) => {
+                console.log("clodinary error", error);
+            });
+        }
 
         await Post.create({
             content: content,
@@ -32,6 +36,7 @@ export const createPostAction = async(content: string, imageUrl: string)=>{
                 UserId: user.id
             }
         })
+        revalidatePath('/');
     }catch(error: any){
         console.log(error);
         throw new Error(error);
@@ -41,8 +46,22 @@ export const createPostAction = async(content: string, imageUrl: string)=>{
 export async function getPostAction(){
     await DBConnect();
     try{
-        const posts = await Post.find({});
-        return (JSON.stringify(posts));
+        const posts = await Post.find({}).sort({createdAt: -1});
+        return (JSON.parse(JSON.stringify(posts)));
+    }catch(error: any){
+        console.log(error);
+        throw new Error(error);
+    }
+}
+
+export async function deletePostAction(postId: string){
+    await DBConnect();
+    try{
+        await Post.deleteOne({
+            _id: postId
+        });
+        revalidatePath('/');
+        return true;
     }catch(error: any){
         console.log(error);
         throw new Error(error);
